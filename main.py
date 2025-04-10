@@ -83,9 +83,25 @@ def studentGegevens(studentNummer):
     print(f'Leeftijd: {age}')
     print(f'E-mail: {email}')
 
-    terugNaarOverzicht = input("\nWil je terug naar het overzicht? (ja/nee): ").lower().strip()
-    if terugNaarOverzicht == 'ja':
-        kiesStudent()
+    delete = input('\nWil je deze student verwijderen? (ja/nee):\n').lower().strip()
+    if delete == 'ja':
+        verwijderStudent(studentNummer)
+    else:
+        terugNaarOverzicht = input("\nWil je terug naar het overzicht? (ja/nee): ").lower().strip()
+        if terugNaarOverzicht == 'ja':
+            kiesStudent()
+
+# Function to delete a student
+def verwijderStudent(studentNummer):
+    bestandNaam = f'data/{studentNummer}.json'
+
+    if os.path.exists(bestandNaam):
+        os.remove(bestandNaam)
+        print(f'Student {studentNummer} verwijderd')
+    else:
+        print('Student bestand niet gevonden')
+    
+    kiesStudent()
 
 # Function for the user to choose a student number
 def kiesStudent():
