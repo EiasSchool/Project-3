@@ -1,7 +1,49 @@
 import os
 import json
 
-# Function to get information
+# Function for the main menu
+def hoofdMenu():
+    while True:
+        print("\n--- Hoofmenu ---")
+        print("1. Voeg student toe")
+        print("2. Bekijk studenten overzicht")
+        print("3. Verwijder student")
+        print("4. Stoppen")
+        keuze = input("Maak een keuze (1, 2, 3, 4):\n")
+
+        if keuze == '1':
+            voegStudentToe()
+        elif keuze == '2':
+            kiesStudent()
+        elif keuze == '3':
+            studentNummer = input("Voer het studentnummer in van de student die je wilt verwijderen:\n")
+            verwijderStudent(studentNummer)
+        elif keuze == '4':
+            print("Programma afgesloten")
+            break
+        else:
+            print("Ongeldige keuze, probeer het opnieuw")
+
+# Function to add a student
+def voegStudentToe():
+    student = studentInformatie()
+
+    # Create the file name
+    bestandNaam = f'data/{student["studentnummer"]}.json'
+
+    # Create the json file
+    if os.path.exists(bestandNaam):
+        overwrite = input("Dit student bestaat al. Wil je overschrijven? (ja/nee)\n").lower().strip()
+        if overwrite != "ja":
+            print("Cancelled")
+            return
+
+    # Write the data
+    with open(bestandNaam, 'w') as file:
+        json.dump(student, file, indent=2)
+    print(f"{student['studentnaam']} opgeslagen in {bestandNaam}")
+
+# Function to get the student's information
 def studentInformatie():
     studentNaam = input("Wat is je naam?\n")
     # Check if user used only numbers
@@ -29,25 +71,8 @@ def studentInformatie():
     }
     return student
 
-# Checks if folder named "data" exists, if not it will make it
+# Function to check if folder named "data" exists, if not it will make it
 os.makedirs("data", exist_ok=True)
-
-student = studentInformatie()
-
-# Create the file name
-bestandNaam = f'data/{student["studentnummer"]}.json'
-
-# Create the json file
-if os.path.exists(bestandNaam):
-    overwrite = input("Dit student bestaat al. Wil je overschrijven? (ja/nee)\n").lower().strip()
-    if overwrite != "ja":
-        print("Cancelled")
-        exit()
-
-# Write the data
-with open(bestandNaam, 'w') as file:
-    json.dump(student, file, indent=2)
-print(f"{student['studentnaam']} opgeslagen in {bestandNaam}")
 
 # Function to get the students numbers from json files
 def studentNummersWeergeven():
@@ -59,7 +84,7 @@ def studentNummersWeergeven():
             studentenNummers.append(studentNummer)
     return studentenNummers
 
-# Function to display the students numbers
+# Function to display the student's details
 def studentGegevens(studentNummer):
     bestandNaam = f'data/{studentNummer}.json'
 
@@ -73,7 +98,7 @@ def studentGegevens(studentNummer):
     today = datetime.today()
     age = today.year - birthdate.year - ((today.month, today.day) < (birthdate.month, birthdate.day))
     
-    # Diplay the informations
+    # Display the information
     email = f'{studentNummer}@mydavinci.nl'
     print('\nStudent Gegevens:')
     print(f'Naam: {student["studentnaam"]}')
@@ -125,4 +150,4 @@ def kiesStudent():
         print("Ongeldig studentnummer")
 
 if __name__ == "__main__":
-    kiesStudent()
+    hoofdMenu()
