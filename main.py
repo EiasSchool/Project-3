@@ -38,7 +38,8 @@ while True:
     print("2. Student details bekijken")
     print("3. Student verwijderen")
     print("4. Student aanpassen")
-    print("5. Stoppen")
+    print("5. Cijfer toevoegen")
+    print("6. Stoppen")
     keuze = input("Kies een optie:\n")
 
     if keuze == "1":
@@ -65,9 +66,19 @@ while True:
                 print(f"Studentnummer: {student['studentnummer']}")
                 print(f"Klas: {student['klas']}")
                 print(f"Geboortedatum: {student['geboortedatum']}")
+                
+                # Cijfers tonen
+                if "cijfers" in student and student["cijfers"]:
+                    print("Cijfers:")
+                    for vak, cijfer in student["cijfers"].items():
+                        print(f" - {vak}: {cijfer}")
+                    gemiddelde = sum(student["cijfers"].values()) / len(student["cijfers"])
+                    print(f"Gemiddelde cijfer: {gemiddelde:.2f}")
+                else:
+                    print("Geen cijfers gevonden.")
+
                 aanpassen = input("Wil je deze student aanpassen? (ja/nee)\n").lower().strip()
                 if aanpassen == "ja":
-                    # hier hergebruik je de bestaande aanpasfunctionaliteit
                     nieuwe_naam = input(f"Nieuwe naam ({student['studentnaam']}): ") or student['studentnaam']
                     nieuwe_klas = input(f"Nieuwe klas ({student['klas']}): ") or student['klas']
                     nieuwe_geboortedatum = input(f"Nieuwe geboortedatum ({student['geboortedatum']}): ") or student['geboortedatum']
@@ -109,6 +120,45 @@ while True:
             print("Student niet gevonden.")
 
     elif keuze == "5":
+        studentnummer = input("Voer studentnummer in:\n")
+        bestandNaam = f"data/{studentnummer}.json"
+        if not os.path.exists(bestandNaam):
+            print("Student niet gevonden.")
+            continue
+
+        with open(bestandNaam, 'r') as file:
+            student = json.load(file)
+
+        vak = input("Voor welk vak wil je een cijfer toevoegen?\n").strip()
+        if not vak:
+            print("Vak mag niet leeg zijn.")
+            continue
+
+        try:
+            cijfer = float(input("Wat is het cijfer? (0.0 t/m 10.0)\n"))
+            if cijfer < 0.0 or cijfer > 10.0:
+                print("Cijfer moet tussen 0.0 en 10.0 zijn.")
+                continue
+        except ValueError:
+            print("Ongeldig cijfer.")
+            continue
+
+        if "cijfers" not in student:
+            student["cijfers"] = {}
+
+        student["cijfers"][vak] = cijfer
+
+        # Gemiddelde berekenen
+        alle_cijfers = list(student["cijfers"].values())
+        gemiddelde = sum(alle_cijfers) / len(alle_cijfers)
+
+        with open(bestandNaam, 'w') as file:
+            json.dump(student, file, indent=2)
+
+        print(f"Cijfer toegevoegd voor {vak}.")
+        print(f"Gemiddelde cijfer: {gemiddelde:.2f}")
+
+    elif keuze == "6":
         print("Tot ziens!")
         break
 
